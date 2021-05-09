@@ -59,12 +59,12 @@ def process_event(event):
     """
     if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
         print()
-    if event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED:
-        text = event.args['text'].lower()
-        if text == 'open the door':
-            openDoor()
-        if text == 'close the door':
-            closeDoor()
+    if event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED: # 오케이 구글 이후에 명령어 입력이 끝나면 실행
+        text = event.args['text'].lower() # 이벤트에서 받은 텍스트를 소문자로 변환
+        if text == 'open the door': # open the door가 입력되었을 때
+            openDoor() # 문 열기 함수를 실행
+        if text == 'close the door': # close the door가 입력되었을 때
+            closeDoor() # 문 닫기 함수를 실행
         print(text)
 
     print(event)
@@ -165,31 +165,31 @@ def main():
             process_event(event)
 
 
-open_door_degree = 6
+open_door_degree = 6 # 문이 열릴때 쓰이는 각도
 
-close_door_degree = 2.5
+close_door_degree = 2.5 # 문이 닫힐때 쓰이는 각도
 
-pin = 16
+pin = 16 # 핀의 번호, 가이드에 적힌대로 꽂으면 동작
 
 def rotateServoMotor(pin,degree,t):
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(pin,GPIO.OUT)
-    pwm=GPIO.PWM(pin,50)
+    GPIO.setmode(GPIO.BOARD) # GPIO의 모드를 BOARD로 세팅
+    GPIO.setup(pin,GPIO.OUT) # 핀 번호 맵핑
+    pwm=GPIO.PWM(pin,50) # 펄스 셋팅
     
     pwm.start(0)
 #    time.sleep(t)
     
-    pwm.ChangeDutyCycle(degree)
+    pwm.ChangeDutyCycle(degree) # 각도만큼 서브모터를 돌림
     time.sleep(t)
     
     pwm.stop()
     GPIO.cleanup(pin)
     
 def openDoor():
-    rotateServoMotor(pin, open_door_degree, 0.5)
+    rotateServoMotor(pin, open_door_degree, 0.5) # pin 번호의 모터를 open_door_degree의 각도만큼 0.5초간 돌림
     
 def closeDoor():
-    rotateServoMotor(pin, close_door_degree, 0.5)
+    rotateServoMotor(pin, close_door_degree, 0.5) # pin 번호의 모터를 close_door_degree의 각도만큼 0.5초간 돌림
 
 if __name__ == '__main__':
     main()
