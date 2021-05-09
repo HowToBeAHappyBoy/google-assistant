@@ -27,6 +27,8 @@ from google.assistant.library import Assistant
 from google.assistant.library.event import EventType
 from google.assistant.library.file_helpers import existing_file
 from google.assistant.library.device_helpers import register_device
+import RPi.GPIO as GPIO
+import time
 
 import faulthandler
 faulthandler.enable()
@@ -57,6 +59,13 @@ def process_event(event):
     """
     if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
         print()
+    if event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED:
+        text = event.args['text'].lower()
+        if text == 'open the door':
+            openDoor()
+        if text == 'close the door':
+            closeDoor()
+        print(text)
 
     print(event)
 
@@ -155,6 +164,32 @@ def main():
 
             process_event(event)
 
+
+open_door_degree = 6
+
+close_door_degree = 2.5
+
+pin = 16
+
+def rotateServoMotor(pin,degree,t):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(pin,GPIO.OUT)
+    pwm=GPIO.PWM(pin,50)
+    
+    pwm.start(0)
+#    time.sleep(t)
+    
+    pwm.ChangeDutyCycle(degree)
+    time.sleep(t)
+    
+    pwm.stop()
+    GPIO.cleanup(pin)
+    
+def openDoor():
+    rotateServoMotor(pin, open_door_degree, 0.5)
+    
+def closeDoor():
+    rotateServoMotor(pin, close_door_degree, 0.5)
 
 if __name__ == '__main__':
     main()
